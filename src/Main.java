@@ -52,10 +52,13 @@ public class Main {
     private static void addStudent() throws SQLException {
         String name = readName("Name: ");
         String email = readEmail("Email: ");
+        String phone = readPhone("Phone (10 digits): ");
         int courseId = readCourseId();
         double marks = readMarks("Marks (0-100): ");
 
-        dao.addStudent(new Student(name, email, courseId, marks));
+        Student student = new Student(name, email, courseId, marks);
+        student.setPhone(phone);
+        dao.addStudent(student);
         System.out.println("Student added successfully.");
     }
 
@@ -95,6 +98,14 @@ public class Main {
             return;
         }
 
+        String phone = readOptional("Phone [" + (old.getPhone() == null ? "-" : old.getPhone()) + "]: ");
+        if (phone.isEmpty()) {
+            phone = old.getPhone();
+        } else if (!Validator.isValidPhone(phone)) {
+            System.out.println("Invalid phone. Update cancelled.");
+            return;
+        }
+
         int courseId = old.getCourseId();
         String courseInput = readOptional("Change course? (y/n): ");
         if (courseInput.equalsIgnoreCase("y")) {
@@ -116,7 +127,9 @@ public class Main {
             }
         }
 
-        dao.updateStudent(id, new Student(name.trim(), email, courseId, marks));
+        Student updated = new Student(name.trim(), email, courseId, marks);
+        updated.setPhone(phone);
+        dao.updateStudent(id, updated);
         System.out.println("Student updated successfully.");
     }
 
@@ -146,8 +159,9 @@ public class Main {
             System.out.println("No students found.");
             return;
         }
-        System.out.printf("%-4s %-20s %-28s %-8s %6s%n", "ID", "Name", "Email", "Course", "Marks");
-        System.out.println("-".repeat(70));
+        System.out.printf("%-4s %-20s %-28s %-12s %-8s %6s%n",
+                "ID", "Name", "Email", "Phone", "Course", "Marks");
+        System.out.println("-".repeat(83));
         for (Student s : students) {
             System.out.println(s);
         }
@@ -188,6 +202,17 @@ public class Main {
                 return email;
             }
             System.out.println("Invalid email format. Example: name@example.com");
+        }
+    }
+
+    private static String readPhone(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String phone = sc.nextLine().trim();
+            if (Validator.isValidPhone(phone)) {
+                return phone;
+            }
+            System.out.println("Invalid phone. Enter 10 digits starting with 6-9.");
         }
     }
 

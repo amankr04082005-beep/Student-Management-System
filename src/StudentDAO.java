@@ -15,18 +15,19 @@ import java.util.Map;
 public class StudentDAO {
 
     private static final String SELECT_WITH_COURSE =
-            "SELECT s.id, s.name, s.email, s.course_id, c.course_name, s.marks " +
+            "SELECT s.id, s.name, s.email, s.phone, s.course_id, c.course_name, s.marks " +
             "FROM students s JOIN courses c ON s.course_id = c.course_id ";
 
     // INSERT
     public void addStudent(Student s) throws SQLException {
-        String sql = "INSERT INTO students (name, email, course_id, marks) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO students (name, email, phone, course_id, marks) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, s.getName());
             ps.setString(2, s.getEmail());
-            ps.setInt(3, s.getCourseId());
-            ps.setDouble(4, s.getMarks());
+            ps.setString(3, s.getPhone());
+            ps.setInt(4, s.getCourseId());
+            ps.setDouble(5, s.getMarks());
             ps.executeUpdate();
         }
     }
@@ -78,14 +79,15 @@ public class StudentDAO {
 
     // UPDATE (returns number of rows changed)
     public int updateStudent(int id, Student s) throws SQLException {
-        String sql = "UPDATE students SET name = ?, email = ?, course_id = ?, marks = ? WHERE id = ?";
+        String sql = "UPDATE students SET name = ?, email = ?, phone = ?, course_id = ?, marks = ? WHERE id = ?";
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, s.getName());
             ps.setString(2, s.getEmail());
-            ps.setInt(3, s.getCourseId());
-            ps.setDouble(4, s.getMarks());
-            ps.setInt(5, id);
+            ps.setString(3, s.getPhone());
+            ps.setInt(4, s.getCourseId());
+            ps.setDouble(5, s.getMarks());
+            ps.setInt(6, id);
             return ps.executeUpdate();
         }
     }
@@ -132,12 +134,14 @@ public class StudentDAO {
 
     // Converts one row of ResultSet into a Student object
     private Student mapRow(ResultSet rs) throws SQLException {
-        return new Student(
+        Student s = new Student(
                 rs.getInt("id"),
                 rs.getString("name"),
                 rs.getString("email"),
                 rs.getInt("course_id"),
                 rs.getString("course_name"),
                 rs.getDouble("marks"));
+        s.setPhone(rs.getString("phone"));
+        return s;
     }
 }

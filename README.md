@@ -8,6 +8,7 @@ A console-based Java application to manage student records using **Java, JDBC an
 * Search students by name
 * Course-wise student count report
 * Input validation (name, email, marks) and exception handling
+- Phone number validation (10-digit Indian mobile number)
 
 ## Tech Stack
 

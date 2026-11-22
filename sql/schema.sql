@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS students (
     id        INT PRIMARY KEY AUTO_INCREMENT,
     name      VARCHAR(100) NOT NULL,
     email     VARCHAR(100) NOT NULL UNIQUE,
+    phone     VARCHAR(10),
     course_id INT NOT NULL,
     marks     DOUBLE NOT NULL,
     FOREIGN KEY (course_id) REFERENCES courses(course_id)

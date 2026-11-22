@@ -1,11 +1,9 @@
-/**
- * Student "is a" Person (inheritance) with extra details.
- */
 public class Student extends Person {
     private int id;
     private int courseId;
     private String courseName;   // filled when we read from DB using JOIN
     private double marks;
+    private String phone;
 
     // Used when reading an existing student from the database
     public Student(int id, String name, String email, int courseId, String courseName, double marks) {
@@ -31,9 +29,12 @@ public class Student extends Person {
     public double getMarks() { return marks; }
     public void setMarks(double marks) { this.marks = marks; }
 
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
     @Override
     public String toString() {
-        return String.format("%-4d %-20s %-28s %-8s %6.2f",
-                id, getName(), getEmail(), courseName, marks);
+        return String.format("%-4d %-20s %-28s %-12s %-8s %6.2f",
+                id, getName(), getEmail(), phone == null ? "-" : phone, courseName, marks);
     }
 }

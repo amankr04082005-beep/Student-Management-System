@@ -15,4 +15,9 @@ public class Validator {
     public static boolean isValidMarks(double marks) {
         return marks >= 0 && marks <= 100;
     }
+
+    public static boolean isValidPhone(String phone) {
+        // 10-digit Indian mobile number, starts with 6-9
+        return phone != null && phone.matches("[6-9][0-9]{9}");
+    }
 }
