@@ -71,6 +71,10 @@ student-management-system/
 * `courses (course\_id, course\_name)`
 * `students (id, name, email UNIQUE, course\_id FOREIGN KEY, marks)`
 
+## Web App
+
+A separate Spring Boot web version is available in [`web/`](web/). See [`web/README.md`](web/README.md) for setup and run instructions.
+
 ## Screenshots
 
 !\[Menu](screenshots/menu.png)
