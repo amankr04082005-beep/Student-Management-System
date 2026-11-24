@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Student Management</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:20px auto;padding:0 10px}
+input,select,button{padding:6px;margin:3px}
+table{border-collapse:collapse;width:100%;margin-top:10px}
+th,td{border:1px solid #ccc;padding:6px;text-align:left}
+th{background:#f0f0f0}
+#msg{color:#b00;min-height:20px}
+</style></head><body>
+<h2>Student Management System</h2>
+<h3 id="formTitle">Add Student</h3>
+<input id="name" placeholder="Name">
+<input id="email" placeholder="Email">
+<input id="phone" placeholder="Phone (10 digit)">
+<select id="course"></select>
+<input id="marks" type="number" placeholder="Marks (0-100)">
+<button id="saveBtn" onclick="save()">Add</button>
+<button id="cancelBtn" onclick="resetForm()" style="display:none">Cancel</button>
+<div id="msg"></div>
+<h3>Search</h3>
+<input id="search" placeholder="Name ya email" oninput="load()">
+<table><thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Course</th><th>Marks</th><th></th></tr></thead>
+<tbody id="rows"></tbody></table>
+<h3>Course Count</h3>
+<ul id="counts"></ul>
+<script>
+const $ = id => document.getElementById(id);
+let editId = null;
+let cache = [];
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+async function api(url, opt) {
+  const r = await fetch(url, opt);
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.message || r.status); }
+  return r.status === 204 ? null : r.json();
+}
+async function load() {
+  const q = encodeURIComponent($('search').value);
+  cache = await api('/api/students?search=' + q);
+  $('rows').innerHTML = cache.map(s => `<tr><td>${s.id}</td><td>${esc(s.name)}</td><td>${esc(s.email)}</td><td>${esc(s.phone)}</td><td>${esc(s.courseName)}</td><td>${s.marks}</td><td><button onclick="edit(${s.id})">Edit</button><button onclick="del(${s.id})">Delete</button></td></tr>`).join('');
+  const c = await api('/api/reports/course-count');
+  $('counts').innerHTML = c.map(x => `<li>${esc(x.course)}: ${x.count}</li>`).join('');
+}
+function resetForm() {
+  editId = null;
+  ['name', 'email', 'phone', 'marks'].forEach(i => $(i).value = '');
+  $('formTitle').textContent = 'Add Student';
+  $('saveBtn').textContent = 'Add';
+  $('cancelBtn').style.display = 'none';
+  $('msg').textContent = '';
+}
+function edit(id) {
+  const s = cache.find(x => x.id === id);
+  if (!s) return;
+  editId = id;
+  $('name').value = s.name;
+  $('email').value = s.email;
+  $('phone').value = s.phone || '';
+  $('course').value = s.courseId;
+  $('marks').value = s.marks;
+  $('formTitle').textContent = 'Edit Student (ID ' + id + ')';
+  $('saveBtn').textContent = 'Update';
+  $('cancelBtn').style.display = '';
+  $('msg').textContent = '';
+  window.scrollTo(0, 0);
+}
+async function save() {
+  $('msg').textContent = '';
+  const body = JSON.stringify({name: $('name').value, email: $('email').value, phone: $('phone').value || null,
+    courseId: Number($('course').value), marks: $('marks').value === '' ? null : Number($('marks').value)});
+  try {
+    const url = editId ? '/api/students/' + editId : '/api/students';
+    await api(url, {method: editId ? 'PUT' : 'POST', headers: {'Content-Type': 'application/json'}, body});
+    resetForm();
+    load();
+  } catch (e) { $('msg').textContent = e.message; }
+}
+async function del(id) {
+  if (!confirm('Delete karna hai?')) return;
+  await api('/api/students/' + id, {method: 'DELETE'});
+  if (editId === id) resetForm();
+  load();
+}
+(async () => {
+  const cs = await api('/api/courses');
+  $('course').innerHTML = cs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  load();
+})();
+</script></body></html>
