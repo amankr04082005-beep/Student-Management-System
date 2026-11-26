@@ -19,17 +19,17 @@ public class Main {
             int choice = readInt("Enter choice: ");
             try {
                 switch (choice) {
-                    case 1: addStudent(); break;
-                    case 2: viewAll(); break;
-                    case 3: searchStudent(); break;
-                    case 4: updateStudent(); break;
-                    case 5: deleteStudent(); break;
-                    case 6: courseReport(); break;
-                    case 0:
+                    case 1 -> addStudent();
+                    case 2 -> viewAll();
+                    case 3 -> searchStudent();
+                    case 4 -> updateStudent();
+                    case 5 -> deleteStudent();
+                    case 6 -> courseReport();
+                    case 0 -> {
                         System.out.println("Goodbye!");
                         return;
-                    default:
-                        System.out.println("Invalid choice. Please enter 0-6.");
+                    }
+                    default -> System.out.println("Invalid choice. Please enter 0-6.");
                 }
             } catch (SQLIntegrityConstraintViolationException e) {
                 System.out.println("Error: a student with this email already exists.");
