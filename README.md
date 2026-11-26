@@ -118,3 +118,6 @@ The password is not stored in code; it is read from the `DB_PASSWORD` environmen
 ![Student List](screenshots/list.png)
 
 ![Course Count](screenshots/count.png)
+
+# Live Link
+**Live demo:** https://student-management-system-txee.onrender.com
